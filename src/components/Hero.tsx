@@ -2,31 +2,30 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Zap, Code, ShieldCheck, HeartHandshake } from "lucide-react";
+import { ArrowRight, Code, ShieldCheck, HeartHandshake, Zap, MessageSquare } from "lucide-react";
 
-export default function Hero() {
+interface HeroProps {
+  onOpenApply?: () => void;
+}
+
+export default function Hero({ onOpenApply }: HeroProps) {
   return (
-    <section className="relative craft-grid pt-10 pb-16 md:pt-16 md:pb-28 overflow-x-hidden border-b-4 border-[#042113]">
+    <section className="relative pt-8 pb-14 md:pt-14 md:pb-20 border-b-4 border-[#042113] overflow-hidden craft-grid">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-4xl mx-auto space-y-6 sm:space-y-8">
-          
-          {/* Main Logo Sticker & Headline */}
-          <div className="space-y-4">
-            <div className="flex justify-center mb-4 sm:mb-6 pt-2">
-              <div className="relative w-56 h-16 sm:w-80 sm:h-24 md:w-[400px] md:h-32 transform -rotate-2 hover:rotate-1 transition-transform duration-300 drop-shadow-[5px_6px_0px_#03170D]">
-                <Image
-                  src="/logo.png"
-                  alt="TEENVERSE"
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </div>
+        <div className="text-center space-y-6 sm:space-y-8 max-w-4xl mx-auto">
 
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-heading tracking-wide text-white leading-[1.1] uppercase">
-              WE ARE A COMMUNITY OF{" "}
+          {/* Tagline Badge */}
+          <div className="inline-flex items-center gap-2 bg-[#042113] border-2 border-[#CCFF00] px-4 py-1.5 rounded-full shadow-[4px_4px_0px_#000]">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-ping"></span>
+            <span className="text-[#CCFF00] text-xs sm:text-sm font-mono font-extrabold tracking-wider uppercase">
+              PAKISTAN&apos;S TEEN BUILDERS NETWORK 🇵🇰
+            </span>
+          </div>
+
+          {/* Main Hero Headline with Running Sundays heading font */}
+          <div className="space-y-2">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-heading text-white tracking-wide uppercase leading-tight sm:leading-none">
+              A COMMUNITY OF{" "}
               <span className="inline-block bg-[#CCFF00] text-[#042113] px-2.5 py-0.5 sm:px-3 sm:py-1 -rotate-1 rounded-xl border-3 sm:border-4 border-[#042113] shadow-[3px_3px_0px_#042113]">
                 COOL NERDS
               </span>{" "}
@@ -50,8 +49,18 @@ export default function Hero() {
             </Link>
 
             <a
+              href="https://discord.gg/V4bfGJJj7e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl border-3 border-[#042113] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#042113] transition-all text-center cursor-pointer"
+            >
+              <MessageSquare className="w-5 h-5 fill-white" />
+              <span>Join Discord Server</span>
+            </a>
+
+            <a
               href="#domains"
-              className="w-full sm:w-auto bg-[#0D482B] text-emerald-100 font-extrabold hover:text-[#CCFF00] text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl border-3 border-[#166B42] hover:border-[#CCFF00] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#03170D] transition-all text-center"
+              className="w-full sm:w-auto bg-[#0D482B] text-emerald-100 font-extrabold hover:text-[#CCFF00] text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl border-3 border-[#166B42] hover:border-[#CCFF00] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#03170D] transition-all text-center"
             >
               <Zap className="w-5 h-5 text-[#CCFF00]" />
               <span>Explore 5 Domains</span>
@@ -66,6 +75,14 @@ export default function Hero() {
             <div className="bg-[#FF3366] text-white border-2 border-[#042113] px-3 py-1.5 rounded-lg font-black -rotate-2 shadow-[2px_2px_0px_#042113]">
               <span>NO BORING BOOMERS 🚫</span>
             </div>
+            <a
+              href="https://discord.gg/V4bfGJJj7e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#5865F2] text-white border-2 border-[#042113] px-3 py-1.5 rounded-lg font-black rotate-1 shadow-[2px_2px_0px_#042113] hover:scale-105 transition-transform"
+            >
+              💬 Discord Community 500+
+            </a>
             <div className="bg-[#FF9900] text-[#042113] border-2 border-[#042113] px-3 py-1.5 rounded-lg font-black rotate-2 shadow-[2px_2px_0px_#042113]">
               <span>MUNs &amp; Hackathons 🚀</span>
             </div>
@@ -86,6 +103,8 @@ export default function Hero() {
           <span>⚡ CIVIC VOLUNTEERSHIP</span>
           <span>•</span>
           <span>BUILD REAL SOLUTIONS</span>
+          <span>•</span>
+          <span>JOIN DISCORD: DISCORD.GG/V4BFGJJJ7E</span>
           <span>•</span>
           <span>CHARACTER BUILDING</span>
           <span>•</span>

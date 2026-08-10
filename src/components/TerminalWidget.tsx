@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Terminal as TerminalIcon, CornerDownLeft, Copy, Check } from "lucide-react";
+import { Terminal as TerminalIcon, CornerDownLeft, Copy, Check, MessageSquare } from "lucide-react";
 
 interface TerminalWidgetProps {
   onOpenApply?: () => void;
 }
-
 
 interface CommandHistory {
   command: string;
@@ -25,7 +24,7 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
           <p>--------------------------------------------------</p>
           <p>Status: <span className="text-[#CCFF00]">ACTIVE &amp; HIRING VOLUNTEERS</span></p>
           <p>Location: Bahawalpur • Multan • Online 🇵🇰</p>
-
+          <p>Discord Server: <a href="https://discord.gg/V4bfGJJj7e" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] underline font-bold">discord.gg/V4bfGJJj7e</a></p>
           <p>Motto: &quot;Cool nerds who do fun things &amp; build real civic tech.&quot;</p>
           <p>--------------------------------------------------</p>
           <p className="text-xs text-emerald-400">Type <span className="text-[#CCFF00] font-bold font-mono">help</span> to see available commands or click quick action buttons below.</p>
@@ -35,8 +34,14 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
   ]);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
 
+  // FIX: Don't auto-scroll page down on initial render!
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history]);
 
@@ -51,12 +56,27 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
         output = (
           <div className="space-y-1 text-xs text-emerald-300 font-mono">
             <p className="text-[#CCFF00] font-bold">Available Commands:</p>
+            <p><span className="text-[#CCFF00] font-bold">discord</span>  - Join official Teenverse Discord community</p>
             <p><span className="text-[#CCFF00] font-bold">domains</span>  - List all 5 Teenverse pillars</p>
-            <p><span className="text-[#CCFF00] font-bold font-mono">apply</span>    - Open volunteer application form modal</p>
+            <p><span className="text-[#CCFF00] font-bold font-mono">apply</span>    - Open volunteer application form (/apply)</p>
             <p><span className="text-[#CCFF00] font-bold font-mono">motto</span>    - Display official Teenverse manifesto motto</p>
             <p><span className="text-[#CCFF00] font-bold font-mono">whoami</span>   - Identity scan</p>
             <p><span className="text-[#CCFF00] font-bold font-mono">secret</span>   - Uncover hidden easter egg</p>
             <p><span className="text-[#CCFF00] font-bold font-mono">clear</span>    - Clear terminal history</p>
+          </div>
+        );
+        break;
+
+      case "discord":
+      case "chat":
+      case "community":
+        window.open("https://discord.gg/V4bfGJJj7e", "_blank");
+        output = (
+          <div className="space-y-1 text-xs font-mono">
+            <p className="text-[#CCFF00] font-bold">
+              💬 Opening official Teenverse Discord Server (https://discord.gg/V4bfGJJj7e)...
+            </p>
+            <p className="text-emerald-300">Join our 500+ teen builders squad on Discord!</p>
           </div>
         );
         break;
@@ -68,8 +88,7 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
             <p>1. <span className="text-[#CCFF00]">Civic Volunteership:</span> BUILD solutions for city problems.</p>
             <p>2. <span className="text-[#CCFF00]">Social Welfare:</span> Local relief drives &amp; community aid.</p>
             <p>3. <span className="text-[#CCFF00]">Character Building:</span> Code, UI/UX, Leadership &amp; Personal Development.</p>
-
-            <p>4. <span className="text-[#CCFF00]">Public Training:</span> Free camps &amp; workshops for high schoolers.</p>
+            <p>4. <span className="text-[#CCFF00]">Public Training:</span> Camps &amp; workshops for high schoolers.</p>
             <p>5. <span className="text-[#CCFF00]">Events &amp; Hackathons:</span> 24h hackathons, MUNs &amp; build nights.</p>
           </div>
         );
@@ -80,11 +99,10 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
         window.location.href = "/apply";
         output = (
           <p className="text-[#CCFF00] font-bold text-xs">
-            🚀 Redirecting to Official Volunteer Application &amp; Pledge page (/apply)...
+            🚀 Redirecting to Official Volunteer Application page (/apply)...
           </p>
         );
         break;
-
 
       case "motto":
       case "manifesto":
@@ -203,7 +221,7 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder="Type 'help', 'domains', 'apply', 'motto'..."
+              placeholder="Type 'help', 'discord', 'domains', 'apply', 'motto'..."
               className="flex-1 bg-transparent text-white font-mono text-xs sm:text-sm focus:outline-none placeholder-emerald-600 min-w-0"
             />
             <button
@@ -220,6 +238,7 @@ export default function TerminalWidget({ onOpenApply }: TerminalWidgetProps) {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-xs font-mono">
           <span className="text-emerald-400 font-bold text-[11px] sm:text-xs">Quick Shortcuts:</span>
           {[
+            { cmd: "discord", label: "discord 💬" },
             { cmd: "help", label: "help" },
             { cmd: "domains", label: "domains" },
             { cmd: "apply", label: "apply" },

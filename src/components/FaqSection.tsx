@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { HelpCircle, ChevronDown } from "lucide-react";
+import { HelpCircle, ChevronDown, MessageSquare } from "lucide-react";
 
 export default function FaqSection() {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
@@ -11,7 +11,6 @@ export default function FaqSection() {
       q: "What exactly is Teenverse?",
       a: "Teenverse is a community of excited, energetic, playful, and talented Pakistani teenagers. We work in 5 core domains: Civic Volunteership, Social Welfare, Character Building, Public Camps, and Events (Hackathons, MUNs & Parties)."
     },
-
     {
       q: "Do I need prior coding or technical experience to join?",
       a: "Not at all! Whether you are a writer, designer, debater, social enthusiast, or just curious to learn, there is a place for you. We provide internal training to teach members skills like coding, UI design, character development, and leadership."
@@ -19,10 +18,6 @@ export default function FaqSection() {
     {
       q: "What is Civic Volunteership: 'BUILD not propose'?",
       a: "Instead of sitting in meetings making PowerPoint presentations or writing complaints, civic volunteers at Teenverse BUILD tangible solutions. This includes building custom apps for local issues, setting up public recycling kits, or organizing neighborhood tech drives."
-    },
-    {
-      q: "Is Teenverse free to join?",
-      a: "Yes! Teenverse is 100% free for all teenagers across Pakistan. We are powered by community passion and teen builders."
     },
     {
       q: "What age group can apply to be a volunteer?",
@@ -81,6 +76,27 @@ export default function FaqSection() {
               </div>
             );
           })}
+        </div>
+
+        {/* Discord Banner in FAQ */}
+        <div className="mt-8 bg-[#09341E] border-2 border-[#5865F2] rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-[4px_4px_0px_#000]">
+          <div className="space-y-1">
+            <h4 className="text-white font-heading text-lg uppercase flex items-center justify-center sm:justify-start gap-2">
+              <MessageSquare className="w-5 h-5 text-[#5865F2]" />
+              <span>HAVE MORE QUESTIONS?</span>
+            </h4>
+            <p className="text-emerald-200 text-xs font-medium">
+              Join our official Discord server to ask questions directly to our squad leaders!
+            </p>
+          </div>
+          <a
+            href="https://discord.gg/V4bfGJJj7e"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider shrink-0 transition-transform hover:scale-105"
+          >
+            Join Discord Server
+          </a>
         </div>
 
       </div>

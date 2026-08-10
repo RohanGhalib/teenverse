@@ -1,0 +1,8 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rectangle with Craft Dark Emerald green background #09341E & Electric Lime border #CCFF00 -->
+  <rect width="512" height="512" rx="96" fill="#09341E" stroke="#CCFF00" stroke-width="24"/>
+  <!-- camelCase 'tV' in bold font -->
+  <text x="50%" y="55%" dominant-baseline="central" text-anchor="middle" font-family="'Running Sundays', 'Impact', Arial, sans-serif" font-weight="900" font-size="270" letter-spacing="-8">
+    <tspan fill="#FFFFFF">t</tspan><tspan fill="#CCFF00">V</tspan>
+  </text>
+</svg>

@@ -6,6 +6,13 @@ export const metadata: Metadata = {
   title: "TEENVERSE — Pakistan's Teen Builders Network | Cool Nerds Doing Fun Things",
   description: "Teenverse is a community of energetic, playful, and talented Pakistani teens. We build civic solutions, host hackathons & MUNs, upskill members, and empower the next generation of builders.",
   keywords: ["Teenverse", "Teenverse Pakistan", "Teenagers Pakistan", "Hackathon", "Civic Volunteership", "Teen Coders", "Youth Empowerment Pakistan"],
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: ["/favicon.svg"],
+    apple: ["/favicon.svg"],
+  },
   openGraph: {
     title: "TEENVERSE — Pakistan's Teen Builders Network",
     description: "A high-energy community of cool nerds building civic tech, hosting bootcamps, MUNs, and hackathons.",
@@ -32,7 +39,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <head>
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="alternate icon" href="/favicon.svg" />
       </head>
       <body className="min-h-screen bg-[#082D19] text-[#F0FFF4] antialiased selection:bg-[#CCFF00] selection:text-[#042113]">
         {children}
@@ -40,4 +48,3 @@ export default function RootLayout({
     </html>
   );
 }
-

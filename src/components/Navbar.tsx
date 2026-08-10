@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, ArrowUpRight, Code2 } from "lucide-react";
+import { Menu, X, ArrowUpRight, Code2, MessageSquare } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,7 +24,7 @@ export default function Navbar() {
         <span className="bg-[#042113] text-[#CCFF00] text-[9px] sm:text-[10px] uppercase font-mono px-2 py-0.5 rounded-full font-bold shrink-0">
           OPEN NOW
         </span>
-        <span className="truncate max-w-[220px] sm:max-w-none">🇵🇰 Volunteer Applications Season '26</span>
+        <span className="truncate max-w-[220px] sm:max-w-none">🇵🇰 Volunteer Applications Season &apos;26</span>
         <Link
           href="/apply"
           className="underline hover:opacity-80 flex items-center gap-0.5 ml-1 font-black cursor-pointer shrink-0"
@@ -93,6 +93,17 @@ export default function Navbar() {
 
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Discord Server Link */}
+            <a
+              href="https://discord.gg/V4bfGJJj7e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex bg-[#5865F2] text-white hover:bg-[#4752C4] text-xs font-black px-3.5 py-2 rounded-xl items-center gap-1.5 border border-[#042113] shadow-[2px_2px_0px_#000] transition-transform hover:scale-105 cursor-pointer"
+            >
+              <MessageSquare className="w-3.5 h-3.5 fill-white" />
+              <span>Discord</span>
+            </a>
+
             <Link
               href="/apply"
               className="sticker-btn text-xs sm:text-sm px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center gap-1.5 cursor-pointer uppercase tracking-wider font-black"
@@ -148,6 +159,17 @@ export default function Navbar() {
             >
               FAQ
             </a>
+            
+            <a
+              href="https://discord.gg/V4bfGJJj7e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-[#5865F2] text-white py-3 rounded-xl uppercase tracking-wider text-xs font-black flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4 fill-white" />
+              <span>Join Discord Community</span>
+            </a>
+
             <Link
               href="/apply"
               onClick={() => setMobileMenuOpen(false)}

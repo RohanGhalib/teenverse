@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Code2, Globe, MessageSquare, ArrowUpRight } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -30,9 +30,15 @@ export default function Footer() {
               <span className="bg-[#0D482B] text-[#CCFF00] px-3 py-1 rounded border border-[#166B42]">
                 🇵🇰 Built in Pakistan
               </span>
-              <span className="bg-[#0D482B] text-[#CCFF00] px-3 py-1 rounded border border-[#166B42]">
-                ⚡ 100% Teen Powered
-              </span>
+              <a
+                href="https://discord.gg/V4bfGJJj7e"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#5865F2] text-white font-bold px-3 py-1 rounded border border-[#042113] hover:scale-105 transition-transform flex items-center gap-1.5"
+              >
+                <MessageSquare className="w-3.5 h-3.5 fill-white" />
+                <span>Discord Community</span>
+              </a>
               <span className="bg-[#0D482B] text-[#CCFF00] px-3 py-1 rounded border border-[#166B42]">
                 💚 100% Teen Energy
               </span>
@@ -74,13 +80,24 @@ export default function Footer() {
           </div>
 
           {/* Action & Community */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h4 className="text-[#CCFF00] font-mono text-xs uppercase tracking-wider">
               JOIN THE MOVEMENT
             </h4>
             <p className="text-xs text-emerald-300">
               Ready to build civic solutions and hang out with the coolest teens in Pakistan?
             </p>
+
+            <a
+              href="https://discord.gg/V4bfGJJj7e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs py-3 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center border-2 border-[#042113]"
+            >
+              <MessageSquare className="w-4 h-4 fill-white" />
+              <span>Join Discord Server</span>
+            </a>
+
             <Link
               href="/apply"
               className="w-full sticker-btn text-xs py-3 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center"
