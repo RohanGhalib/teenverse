@@ -5,6 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { MessageSquare } from "lucide-react";
 
+const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 export default function Footer() {
   return (
     <footer className="bg-[#03170D] border-t-4 border-[#CCFF00] text-white pt-14 pb-12 relative craft-grid-dense">
@@ -31,17 +39,23 @@ export default function Footer() {
                 🇵🇰 Built in Pakistan
               </span>
               <a
+                href="https://instagram.com/teenversepk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white font-bold px-3 py-1 rounded border border-[#042113] hover:scale-105 transition-transform flex items-center gap-1.5"
+              >
+                <InstagramIcon className="w-3.5 h-3.5" />
+                <span>@teenversepk</span>
+              </a>
+              <a
                 href="https://discord.gg/V4bfGJJj7e"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-[#5865F2] text-white font-bold px-3 py-1 rounded border border-[#042113] hover:scale-105 transition-transform flex items-center gap-1.5"
               >
                 <MessageSquare className="w-3.5 h-3.5 fill-white" />
-                <span>Discord Community</span>
+                <span>Discord</span>
               </a>
-              <span className="bg-[#0D482B] text-[#CCFF00] px-3 py-1 rounded border border-[#166B42]">
-                💚 100% Teen Energy
-              </span>
             </div>
           </div>
 
@@ -89,10 +103,20 @@ export default function Footer() {
             </p>
 
             <a
+              href="https://instagram.com/teenversepk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-gradient-to-r from-[#E1306C] to-[#F77737] hover:opacity-90 text-white text-xs py-2.5 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center border-2 border-[#042113]"
+            >
+              <InstagramIcon className="w-4 h-4" />
+              <span>Instagram @teenversepk</span>
+            </a>
+
+            <a
               href="https://discord.gg/V4bfGJJj7e"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs py-3 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center border-2 border-[#042113]"
+              className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs py-2.5 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center border-2 border-[#042113]"
             >
               <MessageSquare className="w-4 h-4 fill-white" />
               <span>Join Discord Server</span>
@@ -100,7 +124,7 @@ export default function Footer() {
 
             <Link
               href="/apply"
-              className="w-full sticker-btn text-xs py-3 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center"
+              className="w-full sticker-btn text-xs py-2.5 px-4 rounded-xl uppercase font-black tracking-wider flex items-center justify-center gap-2 cursor-pointer text-center"
             >
               <span>Apply as a Volunteer</span>
             </Link>

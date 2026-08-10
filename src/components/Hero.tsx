@@ -4,6 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Code, ShieldCheck, HeartHandshake, Zap, MessageSquare } from "lucide-react";
 
+const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 interface HeroProps {
   onOpenApply?: () => void;
 }
@@ -39,7 +47,7 @@ export default function Hero({ onOpenApply }: HeroProps) {
           </p>
 
           {/* Mobile-First Action CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 pt-2">
             <Link
               href="/apply"
               className="w-full sm:w-auto sticker-btn text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl flex items-center justify-center gap-2.5 cursor-pointer uppercase tracking-wider font-black lime-glow text-center"
@@ -52,18 +60,28 @@ export default function Hero({ onOpenApply }: HeroProps) {
               href="https://discord.gg/V4bfGJJj7e"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl border-3 border-[#042113] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#042113] transition-all text-center cursor-pointer"
+              className="w-full sm:w-auto bg-[#5865F2] hover:bg-[#4752C4] text-white font-extrabold text-sm sm:text-base md:text-lg px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl border-3 border-[#042113] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#042113] transition-all text-center cursor-pointer"
             >
               <MessageSquare className="w-5 h-5 fill-white" />
-              <span>Join Discord Server</span>
+              <span>Discord</span>
+            </a>
+
+            <a
+              href="https://instagram.com/teenversepk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto bg-gradient-to-r from-[#E1306C] to-[#F77737] hover:opacity-90 text-white font-extrabold text-sm sm:text-base md:text-lg px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl border-3 border-[#042113] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#042113] transition-all text-center cursor-pointer"
+            >
+              <InstagramIcon className="w-5 h-5" />
+              <span>Instagram</span>
             </a>
 
             <a
               href="#domains"
-              className="w-full sm:w-auto bg-[#0D482B] text-emerald-100 font-extrabold hover:text-[#CCFF00] text-sm sm:text-base md:text-lg px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl border-3 border-[#166B42] hover:border-[#CCFF00] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#03170D] transition-all text-center"
+              className="w-full sm:w-auto bg-[#0D482B] text-emerald-100 font-extrabold hover:text-[#CCFF00] text-sm sm:text-base md:text-lg px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl border-3 border-[#166B42] hover:border-[#CCFF00] flex items-center justify-center gap-2 shadow-[4px_4px_0px_#03170D] transition-all text-center"
             >
               <Zap className="w-5 h-5 text-[#CCFF00]" />
-              <span>Explore 5 Domains</span>
+              <span>5 Domains</span>
             </a>
           </div>
 
@@ -75,6 +93,14 @@ export default function Hero({ onOpenApply }: HeroProps) {
             <div className="bg-[#FF3366] text-white border-2 border-[#042113] px-3 py-1.5 rounded-lg font-black -rotate-2 shadow-[2px_2px_0px_#042113]">
               <span>NO BORING BOOMERS 🚫</span>
             </div>
+            <a
+              href="https://instagram.com/teenversepk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-[#E1306C] text-white border-2 border-[#042113] px-3 py-1.5 rounded-lg font-black -rotate-1 shadow-[2px_2px_0px_#042113] hover:scale-105 transition-transform flex items-center gap-1"
+            >
+              <InstagramIcon className="w-3.5 h-3.5" /> @teenversepk
+            </a>
             <a
               href="https://discord.gg/V4bfGJJj7e"
               target="_blank"
@@ -102,9 +128,11 @@ export default function Hero({ onOpenApply }: HeroProps) {
         <div className="animate-marquee whitespace-nowrap flex gap-6 sm:gap-8">
           <span>⚡ CIVIC VOLUNTEERSHIP</span>
           <span>•</span>
+          <span>INSTAGRAM: @TEENVERSEPK</span>
+          <span>•</span>
           <span>BUILD REAL SOLUTIONS</span>
           <span>•</span>
-          <span>JOIN DISCORD: DISCORD.GG/V4BFGJJJ7E</span>
+          <span>DISCORD: DISCORD.GG/V4BFGJJJ7E</span>
           <span>•</span>
           <span>CHARACTER BUILDING</span>
           <span>•</span>

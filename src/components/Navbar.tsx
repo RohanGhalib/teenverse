@@ -5,6 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, ArrowUpRight, Code2, MessageSquare } from "lucide-react";
 
+const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,13 +100,24 @@ export default function Navbar() {
           </div>
 
           {/* CTA & Mobile Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Instagram Link */}
+            <a
+              href="https://instagram.com/teenversepk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white hover:opacity-90 text-xs font-black px-3 py-2 rounded-xl items-center gap-1.5 border border-[#042113] shadow-[2px_2px_0px_#000] transition-transform hover:scale-105 cursor-pointer"
+            >
+              <InstagramIcon className="w-3.5 h-3.5" />
+              <span>Instagram</span>
+            </a>
+
             {/* Discord Server Link */}
             <a
               href="https://discord.gg/V4bfGJJj7e"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex bg-[#5865F2] text-white hover:bg-[#4752C4] text-xs font-black px-3.5 py-2 rounded-xl items-center gap-1.5 border border-[#042113] shadow-[2px_2px_0px_#000] transition-transform hover:scale-105 cursor-pointer"
+              className="hidden sm:inline-flex bg-[#5865F2] text-white hover:bg-[#4752C4] text-xs font-black px-3 py-2 rounded-xl items-center gap-1.5 border border-[#042113] shadow-[2px_2px_0px_#000] transition-transform hover:scale-105 cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5 fill-white" />
               <span>Discord</span>
@@ -160,6 +179,16 @@ export default function Navbar() {
               FAQ
             </a>
             
+            <a
+              href="https://instagram.com/teenversepk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-gradient-to-r from-[#E1306C] to-[#F77737] text-white py-3 rounded-xl uppercase tracking-wider text-xs font-black flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <InstagramIcon className="w-4 h-4" />
+              <span>Follow @teenversepk on Instagram</span>
+            </a>
+
             <a
               href="https://discord.gg/V4bfGJJj7e"
               target="_blank"
