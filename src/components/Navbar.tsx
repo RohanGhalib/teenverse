@@ -124,6 +124,13 @@ export default function Navbar() {
             </a>
 
             <Link
+              href="/cockpit"
+              className="bg-[#042113] text-[#CCFF00] hover:bg-[#CCFF00] hover:text-[#042113] text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-[#CCFF00] flex items-center gap-1.5 cursor-pointer uppercase tracking-wider font-extrabold transition-colors shadow-[2px_2px_0px_#000]"
+            >
+              <span>Cockpit</span>
+            </Link>
+
+            <Link
               href="/apply"
               className="sticker-btn text-xs sm:text-sm px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl flex items-center gap-1.5 cursor-pointer uppercase tracking-wider font-black"
             >
