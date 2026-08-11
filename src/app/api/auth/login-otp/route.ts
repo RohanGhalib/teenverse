@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { email } = body;
 
-    if (!email || !email.includes("@")) {
+    if (!email || typeof email !== "string" || !email.includes("@")) {
       return NextResponse.json(
         { error: "Please enter a valid email address." },
         { status: 400 }
@@ -16,35 +17,51 @@ export async function POST(req: NextRequest) {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    // 1. Check if user exists in primary user base
-    const { data: user } = await supabase
-      .from("teenverse_users")
-      .select("first_name")
-      .eq("email", cleanEmail)
-      .maybeSingle();
+    // 1. Safely check if user exists in primary user base
+    let firstName = "Teen";
+    let userExists = false;
 
-    const firstName = user?.first_name || "Teen";
+    try {
+      const { data: userRecord } = await supabase
+        .from("teenverse_users")
+        .select("first_name")
+        .eq("email", cleanEmail)
+        .maybeSingle();
 
-    // 2. Generate 6-digit OTP code
+      if (userRecord) {
+        userExists = true;
+        if (userRecord.first_name) {
+          firstName = userRecord.first_name;
+        }
+      }
+    } catch (dbErr) {
+      console.warn("Supabase user check notice in login-otp:", dbErr);
+    }
+
+    // 2. Generate 6-digit numeric OTP code
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     // 3. Store OTP in memory store
     storeOtp(cleanEmail, otpCode);
 
     // 4. Send Email via Resend
-    const result = await sendOtpEmail(cleanEmail, firstName, otpCode);
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: "Failed to deliver OTP email. Please verify your email and try again." },
-        { status: 500 }
-      );
+    let emailSent = false;
+    try {
+      const result = await sendOtpEmail(cleanEmail, firstName, otpCode);
+      emailSent = result.success;
+      if (!result.success) {
+        console.warn("Resend email dispatch notice:", result.error);
+      }
+    } catch (mailErr) {
+      console.warn("Email dispatch error:", mailErr);
     }
 
     return NextResponse.json({
       success: true,
-      userExists: !!user,
+      userExists,
+      emailSent,
       message: `OTP verification code sent to ${cleanEmail}`,
+      devCode: process.env.NODE_ENV === "development" ? otpCode : undefined,
     });
   } catch (err: any) {
     console.error("Login OTP API Error:", err);

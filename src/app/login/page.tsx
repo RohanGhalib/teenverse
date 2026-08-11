@@ -21,9 +21,16 @@ function LoginForm() {
   // Check if already logged in
   useEffect(() => {
     fetch("/api/auth/me")
-      .then((res) => res.json())
+      .then(async (res) => {
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch {
+          return { authenticated: false };
+        }
+      })
       .then((data) => {
-        if (data.authenticated) {
+        if (data && data.authenticated) {
           router.push(redirectParam);
         }
       })
@@ -49,7 +56,14 @@ function LoginForm() {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json();
+      const responseText = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        console.error("Non-JSON Server response:", responseText);
+        throw new Error("Unable to parse authentication response. Please try again.");
+      }
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to send OTP code.");
@@ -83,7 +97,14 @@ function LoginForm() {
         body: JSON.stringify({ email, otp }),
       });
 
-      const data = await res.json();
+      const responseText = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        console.error("Non-JSON Server response:", responseText);
+        throw new Error("Unable to parse verification response. Please try again.");
+      }
 
       if (!res.ok) {
         throw new Error(data.error || "Invalid verification code.");

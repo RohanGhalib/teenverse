@@ -5,7 +5,8 @@ import { signSessionToken, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, otp } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { email, otp } = body;
 
     if (!email || !otp) {
       return NextResponse.json(
@@ -27,11 +28,18 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Fetch existing user record
-    const { data: user, error: userErr } = await supabase
-      .from("teenverse_users")
-      .select("*")
-      .eq("email", cleanEmail)
-      .maybeSingle();
+    let user: any = null;
+    try {
+      const { data: userRecord } = await supabase
+        .from("teenverse_users")
+        .select("*")
+        .eq("email", cleanEmail)
+        .maybeSingle();
+
+      user = userRecord;
+    } catch (dbErr) {
+      console.warn("Supabase user fetch notice in verify-login-otp:", dbErr);
+    }
 
     if (!user) {
       // User has verified email but doesn't have a profile yet
@@ -44,14 +52,18 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Update last_login_at timestamp
-    await supabase
-      .from("teenverse_users")
-      .update({
-        email_verified: true,
-        last_login_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+    try {
+      await supabase
+        .from("teenverse_users")
+        .update({
+          email_verified: true,
+          last_login_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+    } catch (e) {
+      console.warn("Failed to update last_login_at:", e);
+    }
 
     // 4. Create central JWT Session Token
     const rolesArray = user.roles || (user.role ? [user.role] : ["teen_member"]);
