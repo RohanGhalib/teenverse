@@ -4,7 +4,6 @@ import Hero from "@/components/Hero";
 import Domains from "@/components/Domains";
 import StatsSection from "@/components/StatsSection";
 import TerminalWidget from "@/components/TerminalWidget";
-import EventsSection from "@/components/EventsSection";
 import FaqSection from "@/components/FaqSection";
 import Footer from "@/components/Footer";
 
@@ -25,9 +24,6 @@ export default function Home() {
 
       {/* Interactive Hacker CLI Terminal */}
       <TerminalWidget />
-
-      {/* Events & Hackathons */}
-      <EventsSection />
 
       {/* FAQ Accordion */}
       <FaqSection />

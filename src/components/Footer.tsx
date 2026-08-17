@@ -81,11 +81,6 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#events" className="hover:text-[#CCFF00] transition-colors">
-                  Events &amp; Hackathons
-                </a>
-              </li>
-              <li>
                 <a href="#faq" className="hover:text-[#CCFF00] transition-colors">
                   FAQ
                 </a>

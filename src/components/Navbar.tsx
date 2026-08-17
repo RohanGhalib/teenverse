@@ -88,12 +88,6 @@ export default function Navbar() {
             >
               <span className="text-[#CCFF00] font-bold">&gt;_</span> CLI
             </a>
-            <a
-              href="#events"
-              className="hover:text-[#CCFF00] transition-colors"
-            >
-              Events
-            </a>
             <a href="#faq" className="hover:text-[#CCFF00] transition-colors">
               FAQ
             </a>
@@ -170,13 +164,6 @@ export default function Navbar() {
               className="block text-emerald-100 hover:text-[#CCFF00] py-1"
             >
               CLI TERMINAL
-            </a>
-            <a
-              href="#events"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-emerald-100 hover:text-[#CCFF00] py-1"
-            >
-              EVENTS &amp; HACKATHONS
             </a>
             <a
               href="#faq"

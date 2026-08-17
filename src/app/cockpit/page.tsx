@@ -74,7 +74,7 @@ export default function CockpitPage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [events, setEvents] = useState<EventRegistrationRecord[]>([]);
-  const [activeTab, setActiveTab] = useState<"id" | "applications" | "events" | "badges" | "apps">("id");
+  const [activeTab, setActiveTab] = useState<"id" | "applications" | "events" | "badges">("id");
   const [copiedId, setCopiedId] = useState(false);
 
   useEffect(() => {
@@ -210,13 +210,11 @@ export default function CockpitPage() {
 
           <div className="flex items-center gap-3 shrink-0 z-10">
             <Link
-              href="/api/oauth/authorize?client_id=tv_app_scrapyard&redirect_uri=https://scrapyard.teenverse.org/api/auth/callback&scope=openid+profile"
-              target="_blank"
+              href="/apply"
               className="sticker-btn px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer shadow-[4px_4px_0px_#000]"
             >
               <Zap className="w-4 h-4 text-[#042113] fill-[#042113]" />
-              <span>Scrapyard Portal (SSO)</span>
-              <ExternalLink className="w-4 h-4" />
+              <span>Apply to Domain</span>
             </Link>
           </div>
         </div>
@@ -269,18 +267,6 @@ export default function CockpitPage() {
           >
             <Award className="w-4 h-4" />
             <span>Roles &amp; Badges</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("apps")}
-            className={`px-4 py-2.5 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === "apps"
-                ? "bg-[#CCFF00] text-[#042113] font-black border-2 border-[#042113] shadow-[3px_3px_0px_#042113]"
-                : "bg-[#042113] text-emerald-200 border border-[#166B42] hover:text-white"
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Connected Apps &amp; SSO</span>
           </button>
         </div>
 
@@ -446,34 +432,35 @@ export default function CockpitPage() {
         {/* Tab 3: Events & Hackathons */}
         {activeTab === "events" && (
           <div className="space-y-6">
-            {/* Featured Event Card: Scrapyard Hackathon 2026 */}
-            <div className="bg-[#09341E] border-3 border-[#00F0FF] rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_#03170D] space-y-4 relative overflow-hidden">
-              <div className="flex items-center justify-between gap-2">
-                <span className="bg-[#00F0FF] text-[#042113] text-[10px] font-mono font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-[2px_2px_0px_#000]">
-                  FEATURED UPCOMING HACKATHON ⚡
-                </span>
-                <span className="text-xs font-mono font-bold text-[#00F0FF]">NEXT MONTH 2026</span>
+            {events.length === 0 ? (
+              <div className="text-center py-12 bg-[#09341E] border border-[#166B42] rounded-3xl space-y-3">
+                <Calendar className="w-10 h-10 text-emerald-400 mx-auto opacity-60" />
+                <p className="text-emerald-300 font-mono text-sm">No event registrations found.</p>
+                <p className="text-xs text-emerald-400">Upcoming events and hackathon registrations will appear here.</p>
               </div>
-
-              <div className="space-y-2">
-                <h3 className="text-2xl sm:text-3xl font-heading text-white">
-                  SCRAPYARD HACKATHON 🛠️
-                </h3>
-                <p className="text-xs sm:text-sm text-emerald-200 max-w-2xl leading-relaxed">
-                  Turn scrap metal &amp; old hardware into epic tech projects! Hosted on <code className="text-[#00F0FF]">scrapyard.teenverse.org</code> using your central Teenverse Account SSO.
-                </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {events.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className="bg-[#09341E] border-2 border-[#166B42] rounded-2xl p-5 shadow-[4px_4px_0px_#03170D] space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-bold text-[#CCFF00]">
+                        {ev.registration_ref}
+                      </span>
+                      <span className="bg-[#042113] text-[#00F0FF] text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-[#00F0FF]/30">
+                        REGISTERED 🟢
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-heading text-white">{ev.events?.name || "Event Registration"}</h4>
+                      <p className="text-xs font-mono text-emerald-300">{ev.events?.start_date}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              <div className="pt-2 flex flex-wrap gap-3">
-                <Link
-                  href="/api/oauth/authorize?client_id=tv_app_scrapyard&redirect_uri=https://scrapyard.teenverse.org/api/auth/callback&scope=openid+profile"
-                  target="_blank"
-                  className="sticker-btn px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer shadow-[4px_4px_0px_#000]"
-                >
-                  <span>Continue with Teenverse Account &rarr;</span>
-                </Link>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -488,35 +475,14 @@ export default function CockpitPage() {
 
             <div className="bg-[#09341E] border-2 border-[#166B42] rounded-2xl p-5 shadow-[4px_4px_0px_#03170D] space-y-2 opacity-80">
               <div className="text-3xl">⚡</div>
-              <h4 className="text-base font-heading text-white">Scrapyard Hacker &apos;26</h4>
-              <p className="text-xs text-emerald-200">Participate in Scrapyard Hackathon next month to unlock this badge.</p>
+              <h4 className="text-base font-heading text-white">Civic Builder &apos;26</h4>
+              <p className="text-xs text-emerald-200">Active contributor to civic tech and neighborhood initiatives.</p>
             </div>
 
             <div className="bg-[#09341E] border-2 border-[#166B42] rounded-2xl p-5 shadow-[4px_4px_0px_#03170D] space-y-2 opacity-80">
               <div className="text-3xl">📢</div>
               <h4 className="text-base font-heading text-white">Public Camp Instructor</h4>
               <p className="text-xs text-emerald-200">Teach at free weekend bootcamps across Pakistan.</p>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Connected Apps */}
-        {activeTab === "apps" && (
-          <div className="bg-[#09341E] border-2 border-[#166B42] rounded-3xl p-6 shadow-[6px_6px_0px_#03170D] space-y-4">
-            <h3 className="text-xl font-heading text-white flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-[#00F0FF]" />
-              <span>Authorized Subdomains &amp; Apps</span>
-            </h3>
-
-            <div className="bg-[#042113] border border-[#166B42] rounded-2xl p-4 flex items-center justify-between">
-              <div>
-                <h4 className="font-mono text-sm font-bold text-white">Scrapyard Hackathon</h4>
-                <p className="font-mono text-xs text-emerald-400">scrapyard.teenverse.org</p>
-              </div>
-
-              <span className="bg-[#00F0FF] text-[#042113] text-xs font-mono font-black px-3 py-1 rounded-lg">
-                CONNECTED 🟢
-              </span>
             </div>
           </div>
         )}
