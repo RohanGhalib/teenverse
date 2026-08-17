@@ -54,6 +54,7 @@ export default function ApplyPage() {
     instituteName: "",
     studentProofFile: null as File | null,
     studentProofName: "",
+    studentProofUrl: "",
 
     // Section 3: Q/A & Motivation
     primaryDomain: "Civic Volunteership",
@@ -167,15 +168,21 @@ export default function ApplyPage() {
     }
   };
 
-  // Handle File Upload Simulation
+  // Handle File Upload & Base64 Conversion
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setFormData((prev) => ({
-        ...prev,
-        studentProofFile: file,
-        studentProofName: file.name,
-      }));
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Url = (event.target?.result as string) || "";
+        setFormData((prev) => ({
+          ...prev,
+          studentProofFile: file,
+          studentProofName: file.name,
+          studentProofUrl: base64Url,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 

@@ -79,6 +79,7 @@ export default function AdminDashboardPage() {
   const [sendEmail, setSendEmail] = useState(true);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<{ url: string; title: string } | null>(null);
 
   // Check auth status on mount
   useEffect(() => {
@@ -635,9 +636,74 @@ export default function AdminDashboardPage() {
                     <strong className="text-white">Institute:</strong> {selectedApp.teenverse_users.institute_name}
                   </div>
                   {selectedApp.teenverse_users.student_proof_url && (
-                    <div className="col-span-2">
-                      <strong className="text-[#00F0FF]">Student Proof URL:</strong>{" "}
-                      <span className="underline">{selectedApp.teenverse_users.student_proof_url}</span>
+                    <div className="col-span-2 bg-[#082D19] p-3.5 rounded-xl border border-[#166B42] space-y-2 mt-1">
+                      <div className="flex items-center justify-between">
+                        <strong className="text-[#00F0FF] flex items-center gap-1.5 text-xs">
+                          <FileText className="w-4 h-4" />
+                          <span>Student Verification Document:</span>
+                        </strong>
+                        {selectedApp.teenverse_users.student_proof_url.startsWith("data:") ||
+                        selectedApp.teenverse_users.student_proof_url.startsWith("http") ? (
+                          <span className="text-[10px] font-mono bg-[#CCFF00] text-[#042113] font-black px-2 py-0.5 rounded">
+                            DOCUMENT ATTACHED 📄
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono bg-[#166B42] text-emerald-200 font-bold px-2 py-0.5 rounded">
+                            FILE REFERENCE
+                          </span>
+                        )}
+                      </div>
+
+                      {selectedApp.teenverse_users.student_proof_url.startsWith("data:image/") ||
+                      selectedApp.teenverse_users.student_proof_url.startsWith("http") ? (
+                        <div className="flex items-center gap-3 pt-1">
+                          {selectedApp.teenverse_users.student_proof_url.startsWith("data:image/") && (
+                            <img
+                              src={selectedApp.teenverse_users.student_proof_url}
+                              alt="Student Proof"
+                              className="w-14 h-14 object-cover rounded-lg border border-[#CCFF00] cursor-pointer hover:opacity-80 transition-opacity shadow-md"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: selectedApp.teenverse_users!.student_proof_url!,
+                                  title: `${selectedApp.teenverse_users!.first_name}'s Student Proof`,
+                                })
+                              }
+                            />
+                          )}
+                          <div className="space-y-1.5">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDoc({
+                                  url: selectedApp.teenverse_users!.student_proof_url!,
+                                  title: `${selectedApp.teenverse_users!.first_name}'s Student Proof`,
+                                })
+                              }
+                              className="px-3.5 py-1.5 bg-[#042113] hover:bg-[#CCFF00] hover:text-[#042113] text-[#CCFF00] font-bold rounded-lg border border-[#CCFF00] text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>View Proof Document</span>
+                            </button>
+                            <a
+                              href={selectedApp.teenverse_users.student_proof_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download={`${selectedApp.teenverse_users.first_name}_student_proof`}
+                              className="text-[10px] text-emerald-400 hover:text-white flex items-center gap-1 underline"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>Open in New Tab</span>
+                            </a>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-xs font-mono text-emerald-200">
+                          <span>Attached filename:</span>
+                          <span className="font-bold text-[#CCFF00] bg-[#042113] px-2.5 py-1 rounded border border-[#166B42]">
+                            {selectedApp.teenverse_users.student_proof_url}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -705,6 +771,7 @@ export default function AdminDashboardPage() {
                   >
                     <option value="submitted">Submitted ⚪</option>
                     <option value="under_review">Under Review 🟡</option>
+                    <option value="shortlisted">Shortlisted ✨</option>
                     <option value="accepted">Accepted 🟢</option>
                     <option value="orientation_scheduled">Orientation Scheduled 🚀</option>
                     <option value="rejected">Rejected 🔴</option>
@@ -766,6 +833,51 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      {/* Document Preview Lightbox Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#09341E] border-3 border-[#CCFF00] rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.9)]">
+            <div className="p-4 bg-[#042113] border-b-2 border-[#166B42] flex items-center justify-between">
+              <h3 className="font-heading text-white text-base flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#CCFF00]" />
+                <span>{previewDoc.title}</span>
+              </h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href={previewDoc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="student_proof_document"
+                  className="px-3 py-1.5 bg-[#166B42] hover:bg-[#CCFF00] text-white hover:text-[#042113] rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download</span>
+                </a>
+                <button
+                  onClick={() => setPreviewDoc(null)}
+                  className="p-1.5 hover:bg-[#166B42] rounded-xl text-emerald-300 hover:text-white cursor-pointer transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 flex-1 overflow-auto flex items-center justify-center bg-[#042113]">
+              {previewDoc.url.startsWith("data:image/") || previewDoc.url.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
+                <img
+                  src={previewDoc.url}
+                  alt="Student Verification Document"
+                  className="max-w-full max-h-[72vh] object-contain rounded-xl border border-[#166B42] shadow-2xl"
+                />
+              ) : (
+                <iframe
+                  src={previewDoc.url}
+                  title="Document Preview"
+                  className="w-full h-[72vh] rounded-xl border border-[#166B42]"
+                />
+              )}
+            </div>
           </div>
         </div>
       )}
