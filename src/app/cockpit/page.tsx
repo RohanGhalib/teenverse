@@ -24,7 +24,9 @@ import {
   Check,
   Building,
   GraduationCap,
-  MapPin
+  MapPin,
+  Upload,
+  AlertCircle
 } from "lucide-react";
 
 interface UserProfile {
@@ -50,6 +52,7 @@ interface ApplicationRecord {
   application_ref: string;
   primary_domain: string;
   application_status: string;
+  reviewer_notes?: string;
   submitted_at: string;
   why_join?: string;
   skills_and_mastery?: string;
@@ -76,6 +79,9 @@ export default function CockpitPage() {
   const [events, setEvents] = useState<EventRegistrationRecord[]>([]);
   const [activeTab, setActiveTab] = useState<"id" | "applications" | "events" | "badges">("id");
   const [copiedId, setCopiedId] = useState(false);
+  const [reuploadLoading, setReuploadLoading] = useState(false);
+  const [reuploadSuccess, setReuploadSuccess] = useState<string | null>(null);
+  const [reuploadError, setReuploadError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -118,6 +124,62 @@ export default function CockpitPage() {
       navigator.clipboard.writeText(user.account_id);
       setCopiedId(true);
       setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
+
+  const handleDocumentReupload = async (appId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+
+    setReuploadLoading(true);
+    setReuploadSuccess(null);
+    setReuploadError(null);
+
+    try {
+      // 1. Upload file to storage
+      const uploadData = new FormData();
+      uploadData.append("file", file);
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadData,
+      });
+
+      const uploadResult = await uploadRes.json();
+      if (!uploadRes.ok || !uploadResult.url) {
+        throw new Error(uploadResult.error || "Failed to upload document file.");
+      }
+
+      // 2. Call reupload endpoint to update application and user record
+      const reuploadRes = await fetch("/api/applications/reupload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          applicationId: appId,
+          studentProofUrl: uploadResult.url,
+          studentProofName: file.name,
+        }),
+      });
+
+      const reuploadResult = await reuploadRes.json();
+      if (!reuploadRes.ok) {
+        throw new Error(reuploadResult.error || "Failed to update application status.");
+      }
+
+      setReuploadSuccess(`Document "${file.name}" uploaded successfully! Your application is now back under active review 🟢`);
+
+      // Update local state
+      setApplications((prev) =>
+        prev.map((app) =>
+          app.id === appId
+            ? { ...app, application_status: "under_review", reviewer_notes: "Document re-uploaded. Pending re-evaluation." }
+            : app
+        )
+      );
+    } catch (err: any) {
+      setReuploadError(err.message || "Failed to re-upload document.");
+    } finally {
+      setReuploadLoading(false);
     }
   };
 
@@ -423,6 +485,63 @@ export default function CockpitPage() {
                   <p className="text-xs text-emerald-100 font-mono">
                     Submitted on: {new Date(app.submitted_at).toLocaleDateString()}
                   </p>
+
+                  {/* Re-upload Document Required Alert & Uploader */}
+                  {app.application_status === "document_reupload_requested" && (
+                    <div className="bg-[#052715] border-2 border-[#FF9900] rounded-2xl p-5 space-y-4">
+                      <div className="flex items-center gap-2 text-[#FF9900] font-heading text-sm">
+                        <AlertCircle className="w-5 h-5" />
+                        <span>ACTION REQUIRED: Student Verification Document Re-upload</span>
+                      </div>
+
+                      {app.reviewer_notes && (
+                        <div className="bg-[#042113] p-3.5 rounded-xl border border-[#166B42] text-xs font-mono">
+                          <span className="text-[#00F0FF] font-bold block mb-1 uppercase tracking-wide">
+                            💬 Message from Reviewer / Squad Lead:
+                          </span>
+                          <p className="text-white whitespace-pre-wrap">{app.reviewer_notes}</p>
+                        </div>
+                      )}
+
+                      {reuploadSuccess && (
+                        <div className="p-3 bg-[#042113] border border-[#CCFF00] rounded-xl text-xs font-mono font-bold text-[#CCFF00]">
+                          {reuploadSuccess}
+                        </div>
+                      )}
+
+                      {reuploadError && (
+                        <div className="p-3 bg-red-950 border border-red-500 rounded-xl text-xs font-mono font-bold text-red-200">
+                          Error: {reuploadError}
+                        </div>
+                      )}
+
+                      <div className="pt-1">
+                        <label className="relative inline-flex items-center gap-2 bg-[#CCFF00] hover:bg-[#b8e600] text-[#042113] font-mono text-xs font-black uppercase px-5 py-3 rounded-xl cursor-pointer shadow-[3px_3px_0px_#000] transition-transform hover:scale-105">
+                          {reuploadLoading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin text-[#042113]" />
+                              <span>Uploading Document...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4 text-[#042113]" />
+                              <span>Select &amp; Re-Upload New Document 📄</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            disabled={reuploadLoading}
+                            onChange={(e) => handleDocumentReupload(app.id, e)}
+                            className="hidden"
+                          />
+                        </label>
+                        <p className="text-[10px] text-emerald-400 font-mono mt-1.5">
+                          Upload clear Student Card, Roll No Slip, or Bonafide Letter (JPG, PNG, PDF).
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             )}

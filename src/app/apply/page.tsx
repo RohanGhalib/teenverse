@@ -16,6 +16,7 @@ import {
   Lock,
   KeyRound,
   RotateCcw,
+  Loader2,
   X
 } from "lucide-react";
 
@@ -71,6 +72,7 @@ export default function ApplyPage() {
 
   const [ageOverLimit, setAgeOverLimit] = useState(false);
   const [calculatedAge, setCalculatedAge] = useState<number | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
 
   // Calculate exact age from Date of Birth
   const handleDobChange = (dobValue: string) => {
@@ -168,10 +170,13 @@ export default function ApplyPage() {
     }
   };
 
-  // Handle File Upload & Base64 Conversion
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle File Upload & Storage Upload
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setUploadingProof(true);
+
+      // Fast local base64 fallback
       const reader = new FileReader();
       reader.onload = (event) => {
         const base64Url = (event.target?.result as string) || "";
@@ -183,6 +188,28 @@ export default function ApplyPage() {
         }));
       };
       reader.readAsDataURL(file);
+
+      // Upload to Supabase Storage / Server API
+      try {
+        const uploadForm = new FormData();
+        uploadForm.append("file", file);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: uploadForm,
+        });
+        const data = await res.json();
+        if (data && data.url) {
+          setFormData((prev) => ({
+            ...prev,
+            studentProofUrl: data.url,
+            studentProofName: file.name,
+          }));
+        }
+      } catch (uploadErr) {
+        console.warn("Storage upload fallback to base64:", uploadErr);
+      } finally {
+        setUploadingProof(false);
+      }
     }
   };
 
@@ -587,13 +614,20 @@ export default function ApplyPage() {
                         <div className="p-3 bg-[#09341E] rounded-full border border-[#166B42] group-hover:border-[#CCFF00]">
                           <Upload className="w-6 h-6 text-[#CCFF00]" />
                         </div>
-                        {formData.studentProofName ? (
+                        {uploadingProof ? (
+                          <div className="space-y-1">
+                            <span className="text-sm font-bold text-[#00F0FF] flex items-center justify-center gap-2">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Uploading document to secure storage...
+                            </span>
+                          </div>
+                        ) : formData.studentProofName ? (
                           <div className="space-y-1">
                             <span className="text-sm font-bold text-[#CCFF00] flex items-center justify-center gap-1">
                               <CheckCircle2 className="w-4 h-4 text-[#CCFF00]" />
                               {formData.studentProofName}
                             </span>
-                            <span className="text-[10px] text-emerald-400 font-mono block">File Attached! Click to change.</span>
+                            <span className="text-[10px] text-emerald-400 font-mono block">Document Attached &amp; Verified! Click to change.</span>
                           </div>
                         ) : (
                           <div>

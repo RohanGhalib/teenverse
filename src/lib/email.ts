@@ -25,7 +25,7 @@ export interface StatusUpdateEmailParams {
   toEmail: string;
   firstName: string;
   applicationRef: string;
-  newStatus: "submitted" | "under_review" | "shortlisted" | "accepted" | "orientation_scheduled" | "rejected";
+  newStatus: "submitted" | "under_review" | "shortlisted" | "accepted" | "orientation_scheduled" | "rejected" | "document_reupload_requested";
   statusMessage?: string;
   domainName?: string;
 }
@@ -334,6 +334,13 @@ export async function sendStatusUpdateEmail(params: StatusUpdateEmailParams) {
       color: "#FFFFFF",
       bg: "#4B5563",
       subtitle: "Thank you for applying to Teenverse Pakistan. We encourage you to keep building and participate in our open public hackathons.",
+    },
+    document_reupload_requested: {
+      title: "Action Required: Re-upload Verification Document ⚠️",
+      badge: "RE-UPLOAD REQUIRED 📄",
+      color: "#042113",
+      bg: "#FF9900",
+      subtitle: "The student proof document you provided could not be verified or was unclear. Please review the reviewer's note below and re-upload a clear copy in your Cockpit.",
     },
   };
 

@@ -470,8 +470,10 @@ export default function AdminDashboardPage() {
               <option value="all">All Statuses</option>
               <option value="submitted">Submitted</option>
               <option value="under_review">Under Review</option>
+              <option value="shortlisted">Shortlisted</option>
               <option value="accepted">Accepted</option>
               <option value="orientation_scheduled">Orientation Scheduled</option>
+              <option value="document_reupload_requested">Re-upload Required ⚠️</option>
               <option value="rejected">Rejected</option>
             </select>
 
@@ -549,14 +551,20 @@ export default function AdminDashboardPage() {
                                 ? "bg-[#CCFF00] text-[#042113]"
                                 : app.application_status === "under_review"
                                 ? "bg-yellow-400 text-[#042113]"
-                                : app.application_status === "orientation_scheduled"
+                                : app.application_status === "shortlisted"
                                 ? "bg-[#00F0FF] text-[#042113]"
+                                : app.application_status === "orientation_scheduled"
+                                ? "bg-[#FF3366] text-white"
+                                : app.application_status === "document_reupload_requested"
+                                ? "bg-[#FF9900] text-[#042113]"
                                 : app.application_status === "rejected"
                                 ? "bg-red-900 text-red-200"
                                 : "bg-[#042113] text-emerald-200 border border-[#166B42]"
                             }`}
                           >
-                            {app.application_status.replace("_", " ")}
+                            {app.application_status === "document_reupload_requested"
+                              ? "RE-UPLOAD ⚠️"
+                              : app.application_status.replace("_", " ")}
                           </span>
                         </td>
 
@@ -766,7 +774,13 @@ export default function AdminDashboardPage() {
                   </label>
                   <select
                     value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setNewStatus(val);
+                      if (val === "document_reupload_requested" && !reviewerNotes) {
+                        setReviewerNotes("Document image is blurry or unreadable. Please upload a clear photo of your student ID.");
+                      }
+                    }}
                     className="w-full bg-[#042113] border-2 border-[#166B42] focus:border-[#CCFF00] text-white font-mono text-xs rounded-xl p-3 focus:outline-none cursor-pointer"
                   >
                     <option value="submitted">Submitted ⚪</option>
@@ -774,23 +788,55 @@ export default function AdminDashboardPage() {
                     <option value="shortlisted">Shortlisted ✨</option>
                     <option value="accepted">Accepted 🟢</option>
                     <option value="orientation_scheduled">Orientation Scheduled 🚀</option>
+                    <option value="document_reupload_requested">Re-upload Document Required ⚠️</option>
                     <option value="rejected">Rejected 🔴</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-mono font-bold uppercase text-emerald-300 mb-1">
-                    Reviewer Notes / Email Message
+                    Reviewer Notes / Reason For Re-upload
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="Add notes or message for the orientation invite..."
+                    placeholder={
+                      newStatus === "document_reupload_requested"
+                        ? "Enter reason why document was rejected (e.g. image blurry, expired ID)..."
+                        : "Add notes or message for the orientation invite..."
+                    }
                     value={reviewerNotes}
                     onChange={(e) => setReviewerNotes(e.target.value)}
                     className="w-full bg-[#042113] border-2 border-[#166B42] focus:border-[#CCFF00] text-white font-mono text-xs rounded-xl p-2.5 focus:outline-none placeholder-emerald-700"
                   />
                 </div>
               </div>
+
+              {/* Quick Reason Chips for Re-upload */}
+              {newStatus === "document_reupload_requested" && (
+                <div className="bg-[#042113] p-3.5 rounded-xl border border-[#FF9900]/50 space-y-2">
+                  <span className="text-[11px] font-mono text-[#FF9900] font-bold block uppercase">
+                    ⚡ Quick Pre-Fill Reasons:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      "Document image is blurry or unreadable. Please upload a clear photo of your student ID.",
+                      "Student ID card is expired. Please provide current semester roll number slip or bonafide letter.",
+                      "Name or institute details do not match your application info.",
+                      "The uploaded image is cut off. Please ensure all 4 corners of the ID card are visible.",
+                      "Uploaded file is not a valid student verification document. Please attach official student card."
+                    ].map((reason, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setReviewerNotes(reason)}
+                        className="text-[10px] font-mono bg-[#09341E] hover:bg-[#FF9900] text-emerald-200 hover:text-[#042113] px-2.5 py-1.5 rounded-lg border border-[#166B42] hover:border-[#FF9900] transition-colors text-left cursor-pointer"
+                      >
+                        {reason.length > 55 ? reason.substring(0, 52) + "..." : reason}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center gap-2">
                 <input
