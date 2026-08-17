@@ -835,6 +835,8 @@ export default function AdminDashboardPage() {
             </form>
           </div>
         </div>
+      )}
+
       {/* Document Preview Lightbox Modal */}
       {previewDoc && (
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
