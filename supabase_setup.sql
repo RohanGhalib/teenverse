@@ -178,11 +178,13 @@ ALTER TABLE public.volunteer_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.event_registrations ENABLE ROW LEVEL SECURITY;
 
--- Drop existing policies first to prevent 42710 duplicate object errors
+-- Drop existing policies first to prevent duplicate object errors
 DROP POLICY IF EXISTS "Allow public inserts to teenverse_users" ON public.teenverse_users;
 DROP POLICY IF EXISTS "Allow public inserts to volunteer_applications" ON public.volunteer_applications;
 DROP POLICY IF EXISTS "Allow read access to teenverse_users" ON public.teenverse_users;
 DROP POLICY IF EXISTS "Allow read access to volunteer_applications" ON public.volunteer_applications;
+DROP POLICY IF EXISTS "Allow update access to volunteer_applications" ON public.volunteer_applications;
+DROP POLICY IF EXISTS "Allow update access to teenverse_users" ON public.teenverse_users;
 DROP POLICY IF EXISTS "Allow read access to events" ON public.events;
 DROP POLICY IF EXISTS "Allow public inserts to event_registrations" ON public.event_registrations;
 DROP POLICY IF EXISTS "Allow read access to event_registrations" ON public.event_registrations;
@@ -191,14 +193,20 @@ DROP POLICY IF EXISTS "Allow read access to event_registrations" ON public.event
 CREATE POLICY "Allow public inserts to teenverse_users" ON public.teenverse_users
     FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Allow public inserts to volunteer_applications" ON public.volunteer_applications
-    FOR INSERT WITH CHECK (true);
-
 CREATE POLICY "Allow read access to teenverse_users" ON public.teenverse_users
     FOR SELECT USING (true);
 
+CREATE POLICY "Allow update access to teenverse_users" ON public.teenverse_users
+    FOR UPDATE USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow public inserts to volunteer_applications" ON public.volunteer_applications
+    FOR INSERT WITH CHECK (true);
+
 CREATE POLICY "Allow read access to volunteer_applications" ON public.volunteer_applications
     FOR SELECT USING (true);
+
+CREATE POLICY "Allow update access to volunteer_applications" ON public.volunteer_applications
+    FOR UPDATE USING (true) WITH CHECK (true);
 
 CREATE POLICY "Allow read access to events" ON public.events
     FOR SELECT USING (true);
@@ -208,3 +216,15 @@ CREATE POLICY "Allow public inserts to event_registrations" ON public.event_regi
 
 CREATE POLICY "Allow read access to event_registrations" ON public.event_registrations
     FOR SELECT USING (true);
+
+-- Storage bucket policies (for student-proofs bucket)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('student-proofs', 'student-proofs', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+CREATE POLICY "Allow public uploads to student-proofs" ON storage.objects
+    FOR INSERT WITH CHECK (bucket_id = 'student-proofs');
+
+CREATE POLICY "Allow public reads from student-proofs" ON storage.objects
+    FOR SELECT USING (bucket_id = 'student-proofs');
+

@@ -3,9 +3,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.teenverse.org"),
-  title: "TEENVERSE — Pakistan's Teen Builders Network | Cool Nerds Doing Fun Things",
-  description: "Teenverse is a community of energetic, playful, and talented Pakistani teens. We build civic solutions, host hackathons & MUNs, upskill members, and empower the next generation of builders.",
-  keywords: ["Teenverse", "Teenverse Pakistan", "Teenagers Pakistan", "Hackathon", "Civic Volunteership", "Teen Coders", "Youth Empowerment Pakistan"],
+  title: {
+    default: "Teenverse — Pakistan's Teen Builders Network",
+    template: "%s | Teenverse",
+  },
+  description: "A community of energetic teen builders, hackers, and creators in Pakistan building civic tech, hackathons, and creative projects.",
+  keywords: ["Teenverse", "Pakistan Teen Builders", "Teen Hackathons", "Teen Coders Pakistan", "Youth Builders"],
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
@@ -14,8 +17,8 @@ export const metadata: Metadata = {
     apple: ["/favicon.svg"],
   },
   openGraph: {
-    title: "TEENVERSE — Pakistan's Teen Builders Network",
-    description: "A high-energy community of cool nerds building civic tech, hosting bootcamps, MUNs, and hackathons.",
+    title: "Teenverse — Pakistan's Teen Builders Network",
+    description: "A community of energetic teen builders, hackers, and creators in Pakistan.",
     url: "https://www.teenverse.org",
     siteName: "Teenverse",
     images: [
@@ -28,6 +31,12 @@ export const metadata: Metadata = {
     ],
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Teenverse — Pakistan's Teen Builders Network",
+    description: "A community of energetic teen builders, hackers, and creators in Pakistan.",
+    images: ["/logo.png"],
   },
 };
 

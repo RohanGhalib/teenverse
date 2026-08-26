@@ -11,22 +11,27 @@ export default function Icon() {
     (
       <div
         style={{
-          fontSize: 20,
-          background: "#09341E",
           width: "100%",
           height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: "6px",
-          border: "2px solid #CCFF00",
-          fontWeight: 900,
-          fontFamily: "system-ui, sans-serif",
-          letterSpacing: "-1px",
+          background: "#042113",
+          borderRadius: "8px",
+          border: "1.5px solid #166B42",
         }}
       >
-        <span style={{ color: "#FFFFFF" }}>t</span>
-        <span style={{ color: "#CCFF00" }}>V</span>
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 512 512"
+          fill="none"
+        >
+          <path
+            d="M135 110H435L419 190H317L275 402H179L221 190H119L135 110Z"
+            fill="#CCFF00"
+          />
+        </svg>
       </div>
     ),
     {
@@ -34,3 +39,4 @@ export default function Icon() {
     }
   );
 }
+
