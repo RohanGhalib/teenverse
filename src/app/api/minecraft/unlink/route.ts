@@ -21,8 +21,23 @@ export async function POST(req: NextRequest) {
     }
 
     const previousIGN = userProfile.minecraft_username;
+    const lowerIGN = previousIGN.toLowerCase();
 
-    // 2. Clear minecraft_username in teenverse_users
+    // 2. Delete row from AuthMe table so user cannot log in to server until linked again
+    try {
+      const { error: authMeDeleteErr } = await supabase
+        .from("authme")
+        .delete()
+        .eq("username", lowerIGN);
+
+      if (authMeDeleteErr) {
+        console.warn("Notice deleting authme row during unlink:", authMeDeleteErr.message);
+      }
+    } catch (authMeErr: any) {
+      console.warn("AuthMe delete catch notice:", authMeErr?.message);
+    }
+
+    // 3. Clear minecraft_username in teenverse_users
     const { error: updateErr } = await supabase
       .from("teenverse_users")
       .update({
@@ -38,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Minecraft username "${previousIGN}" unlinked from your Teenverse profile.`,
+      message: `Minecraft username "${previousIGN}" disconnected and removed from server login database.`,
     });
   } catch (err: any) {
     console.error("Minecraft Unlink API Error:", err);

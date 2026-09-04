@@ -29,7 +29,24 @@ export async function POST(req: NextRequest) {
 
     const lowerIGN = cleanUsername.toLowerCase();
 
-    // 1. Check if this IGN is already linked to another Teenverse user
+    // 1. Fetch user profile & check if this IGN is already linked to another Teenverse user
+    const { data: currentUserProfile } = await supabase
+      .from("teenverse_users")
+      .select("id, minecraft_username")
+      .eq("id", session.id)
+      .maybeSingle();
+
+    if (currentUserProfile?.minecraft_username && currentUserProfile.minecraft_username.toLowerCase() !== lowerIGN) {
+      try {
+        await supabase
+          .from("authme")
+          .delete()
+          .eq("username", currentUserProfile.minecraft_username.toLowerCase());
+      } catch (delErr: any) {
+        console.warn("Notice removing old IGN row from authme:", delErr?.message);
+      }
+    }
+
     const { data: existingUser, error: checkErr } = await supabase
       .from("teenverse_users")
       .select("id, account_id, email, first_name")
