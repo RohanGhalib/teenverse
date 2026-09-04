@@ -98,6 +98,30 @@ export default function CockpitPage() {
   const [mcErrorMsg, setMcErrorMsg] = useState<string | null>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPasswordInput, setNewPasswordInput] = useState("");
+  const [skinRotate, setSkinRotate] = useState({ x: 0, y: 0 });
+  const [selectedPresetSkin, setSelectedPresetSkin] = useState("Steve");
+
+  const skinPresets = [
+    { label: "Steve", id: "Steve" },
+    { label: "Alex", id: "Alex" },
+    { label: "Crown", id: "Technoblade" },
+    { label: "Suit", id: "Mumbo" },
+    { label: "Red", id: "Grian" },
+    { label: "Smile", id: "Dream" },
+  ];
+
+  const handleSkinMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const rotY = (x / (rect.width / 2)) * 26;
+    const rotX = -(y / (rect.height / 2)) * 18;
+    setSkinRotate({ x: rotX, y: rotY });
+  };
+
+  const handleSkinMouseLeave = () => {
+    setSkinRotate({ x: 0, y: 0 });
+  };
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -200,7 +224,7 @@ export default function CockpitPage() {
   };
 
   const copyServerAddress = () => {
-    navigator.clipboard.writeText("play.teenverse.org");
+    navigator.clipboard.writeText("mc.teenverse.org");
     setCopiedServerIp(true);
     setTimeout(() => setCopiedServerIp(false), 2000);
   };
@@ -607,62 +631,60 @@ export default function CockpitPage() {
             {user.minecraft_username ? (
               /* ALREADY LINKED STATE */
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Card: 3D Player Avatar & Credentials */}
+                {/* Left Card: 3D Interactive Avatar */}
                 <div className="lg:col-span-1">
-                  <div className="bg-gradient-to-br from-[#09341E] via-[#042113] to-[#0D482B] border-4 border-[#CCFF00] rounded-3xl p-6 shadow-[10px_10px_0px_#03170D] space-y-6 relative text-center">
+                  <div className="bg-gradient-to-br from-[#09341E] via-[#042113] to-[#0D482B] border-4 border-[#CCFF00] rounded-3xl p-6 shadow-[10px_10px_0px_#03170D] space-y-4 text-center">
                     <div className="flex items-center justify-between border-b border-[#166B42] pb-3 text-left">
                       <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-[#CCFF00] animate-pulse" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-pulse" />
                         <span className="font-mono text-xs font-black uppercase text-[#CCFF00]">
-                          MINECRAFT ID
+                          MINECRAFT
                         </span>
                       </div>
                       <span className="bg-[#CCFF00] text-[#042113] text-[9px] font-mono font-black px-2 py-0.5 rounded uppercase">
-                        LINKED 🟢
+                        CONNECTED 🟢
                       </span>
                     </div>
 
-                    {/* 3D Skin Body Preview */}
-                    <div className="py-2 flex flex-col items-center justify-center">
-                      <div className="relative w-28 h-44 flex items-center justify-center">
+                    {/* Interactive 3D Skin Body (Tracks Mouse) */}
+                    <div
+                      onMouseMove={handleSkinMouseMove}
+                      onMouseLeave={handleSkinMouseLeave}
+                      className="py-2 flex flex-col items-center justify-center cursor-pointer select-none"
+                      style={{ perspective: 800 }}
+                    >
+                      <div
+                        className="relative transition-transform duration-75 ease-out flex items-center justify-center"
+                        style={{
+                          transform: `rotateX(${skinRotate.x}deg) rotateY(${skinRotate.y}deg)`,
+                          transformStyle: "preserve-3d",
+                        }}
+                      >
                         <img
-                          src={`https://mc-heads.net/body/${encodeURIComponent(user.minecraft_username)}/160`}
+                          src={`https://mc-heads.net/body/${encodeURIComponent(user.minecraft_username)}/170`}
                           alt={user.minecraft_username}
-                          className="h-44 object-contain pixelated drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]"
+                          className="h-44 object-contain pixelated drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]"
                           onError={(e) => {
-                            // Fallback to avatar head if full body fails
-                            (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/${encodeURIComponent(user.minecraft_username || "Steve")}/96`;
+                            (e.target as HTMLImageElement).src = `https://mc-heads.net/body/Steve/170`;
                           }}
                         />
                       </div>
-                      <h3 className="text-2xl font-heading text-white mt-3">
+                      <div
+                        className="w-20 h-3 bg-black/40 rounded-full blur-[3px] transition-transform duration-75 mt-1"
+                        style={{
+                          transform: `translateX(${skinRotate.y * -0.5}px) scale(${1 + Math.abs(skinRotate.x) * 0.01})`,
+                        }}
+                      />
+                      <h3 className="text-2xl font-heading text-white mt-2">
                         {user.minecraft_username}
                       </h3>
-                      <p className="text-[11px] font-mono text-[#00F0FF] mt-0.5">
-                        Connected to {user.account_id}
+                      <p className="text-[11px] font-mono text-emerald-300">
+                        {user.first_name}&apos;s Minecraft Account
                       </p>
                     </div>
 
-                    {/* Link Info Box */}
-                    <div className="bg-[#042113] border border-[#166B42] rounded-2xl p-3.5 space-y-2 text-xs font-mono text-left">
-                      <div className="flex justify-between">
-                        <span className="text-emerald-400">Server Auth:</span>
-                        <span className="text-[#CCFF00] font-bold">AuthMe PostgreSQL</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-emerald-400">Status:</span>
-                        <span className="text-white font-bold">Active Player 🎮</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-emerald-400">Linked Since:</span>
-                        <span className="text-emerald-200">
-                          {user.minecraft_linked_at ? new Date(user.minecraft_linked_at).toLocaleDateString() : "Active"}
-                        </span>
-                      </div>
-                    </div>
-
                     {/* Action Buttons */}
-                    <div className="space-y-2 pt-2">
+                    <div className="space-y-2 pt-1">
                       <button
                         onClick={() => setShowPasswordModal(!showPasswordModal)}
                         className="w-full bg-[#042113] hover:bg-[#073620] text-[#CCFF00] border-2 border-[#CCFF00] py-2.5 rounded-xl font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
@@ -676,7 +698,7 @@ export default function CockpitPage() {
                         disabled={mcActionLoading}
                         className="w-full bg-red-950/60 hover:bg-red-900 text-red-300 border border-red-700/60 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer transition-all disabled:opacity-50"
                       >
-                        <span>Disconnect Minecraft IGN</span>
+                        <span>Disconnect Account</span>
                       </button>
                     </div>
                   </div>
@@ -689,21 +711,21 @@ export default function CockpitPage() {
                     <div className="flex items-center justify-between border-b border-[#166B42] pb-3">
                       <h2 className="text-xl font-heading text-white flex items-center gap-2">
                         <Gamepad2 className="w-5 h-5 text-[#CCFF00]" />
-                        <span>Server Connection Info</span>
+                        <span>How to Join the Server</span>
                       </h2>
                       <span className="bg-[#042113] text-[#00F0FF] text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border border-[#00F0FF]/30 uppercase">
-                        PAPER 1.12.2
+                        JAVA 1.12.2
                       </span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-[#042113] p-4 rounded-2xl border border-[#166B42] space-y-2">
                         <span className="text-emerald-400 font-mono text-[10px] uppercase font-bold block">
-                          SERVER IP / HOSTNAME
+                          SERVER ADDRESS
                         </span>
                         <div className="flex items-center justify-between">
                           <span className="text-white font-mono font-black text-sm">
-                            play.teenverse.org
+                            mc.teenverse.org
                           </span>
                           <button
                             onClick={copyServerAddress}
@@ -717,24 +739,24 @@ export default function CockpitPage() {
 
                       <div className="bg-[#042113] p-4 rounded-2xl border border-[#166B42] space-y-2">
                         <span className="text-emerald-400 font-mono text-[10px] uppercase font-bold block">
-                          DEFAULT PORT &amp; VERSION
+                          VERSION &amp; PORT
                         </span>
                         <div className="text-white font-mono font-black text-sm">
-                          25565 <span className="text-emerald-400 text-xs font-normal">(Java Edition 1.12.2)</span>
+                          1.12.2 <span className="text-emerald-400 text-xs font-normal">(Port 25565)</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* How to Play */}
+                    {/* Simple Instructions */}
                     <div className="bg-[#052715] border-l-4 border-[#CCFF00] rounded-xl p-4 space-y-2">
                       <h4 className="text-xs font-mono font-black uppercase text-[#CCFF00] tracking-wider">
-                        🎮 HOW TO LOG IN IN-GAME:
+                        🎮 JOINING INSTRUCTIONS:
                       </h4>
                       <ol className="text-xs font-mono text-emerald-100 space-y-1.5 list-decimal list-inside">
-                        <li>Launch Minecraft Java Edition (Version 1.12.2).</li>
-                        <li>Join the server at <strong className="text-[#CCFF00]">play.teenverse.org</strong>.</li>
+                        <li>Open Minecraft Java Edition (Version 1.12.2).</li>
+                        <li>Join the server at <strong className="text-[#CCFF00]">mc.teenverse.org</strong>.</li>
                         <li>
-                          Type <code className="bg-[#042113] px-1.5 py-0.5 rounded text-[#00F0FF] border border-[#166B42]">/login &lt;password&gt;</code> using the password you set in this Cockpit.
+                          Type <code className="bg-[#042113] px-1.5 py-0.5 rounded text-[#00F0FF] border border-[#166B42]">/login &lt;password&gt;</code> using the password you set here.
                         </li>
                       </ol>
                     </div>
@@ -746,11 +768,11 @@ export default function CockpitPage() {
                       <div className="flex items-center justify-between border-b border-[#166B42] pb-3">
                         <h3 className="text-lg font-heading text-white flex items-center gap-2">
                           <Lock className="w-5 h-5 text-[#CCFF00]" />
-                          <span>Update Minecraft Server Password</span>
+                          <span>Change Server Password</span>
                         </h3>
                         <button
                           onClick={() => setShowPasswordModal(false)}
-                          className="text-xs text-emerald-400 hover:text-white font-mono"
+                          className="text-xs text-emerald-400 hover:text-white font-mono cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -759,21 +781,21 @@ export default function CockpitPage() {
                       <form onSubmit={handleUpdateMinecraftPassword} className="space-y-4">
                         <div>
                           <label className="block text-xs font-mono font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
-                            New In-Game Server Password
+                            New In-Game Password
                           </label>
                           <div className="relative">
                             <Lock className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400" />
                             <input
                               type="password"
                               required
-                              placeholder="Enter new 6+ char password"
+                              placeholder="Enter your new password (min 6 characters)"
                               value={newPasswordInput}
                               onChange={(e) => setNewPasswordInput(e.target.value)}
                               className="w-full bg-[#042113] border-2 border-[#166B42] focus:border-[#CCFF00] focus:outline-none rounded-xl py-3 pl-11 pr-4 text-sm font-mono text-white placeholder-emerald-700 transition-colors"
                             />
                           </div>
                           <p className="text-[10px] text-emerald-400 font-mono mt-1">
-                            This updates your hash in AuthMe database immediately. You can log in with this new password right away!
+                            Your password will be updated right away. You can use it the next time you log in!
                           </p>
                         </div>
 
@@ -785,12 +807,12 @@ export default function CockpitPage() {
                           {mcActionLoading ? (
                             <>
                               <Loader2 className="w-4 h-4 animate-spin text-[#042113]" />
-                              <span>Updating Password...</span>
+                              <span>Updating...</span>
                             </>
                           ) : (
                             <>
                               <Check className="w-4 h-4 text-[#042113]" />
-                              <span>Save New Password</span>
+                              <span>Save Password</span>
                             </>
                           )}
                         </button>
@@ -806,28 +828,25 @@ export default function CockpitPage() {
                 <div className="lg:col-span-2">
                   <div className="bg-[#09341E] border-3 border-[#CCFF00] rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_#03170D] space-y-6">
                     <div className="space-y-1">
-                      <span className="bg-[#042113] text-[#00F0FF] text-[10px] font-mono font-black px-2.5 py-0.5 rounded border border-[#00F0FF]/30 uppercase tracking-wider">
-                        GAMING REALM INTEGRATION
-                      </span>
                       <h2 className="text-2xl sm:text-3xl font-heading text-white">
-                        Connect Your Minecraft Account 🎮
+                        Connect Minecraft Account 🎮
                       </h2>
                       <p className="text-xs sm:text-sm text-emerald-200">
-                        Link your Minecraft Java username with your Teenverse ID to access our official multiplayer survival &amp; creative servers.
+                        Enter your Minecraft username to connect it with your Teenverse account.
                       </p>
                     </div>
 
                     <form onSubmit={handleLinkMinecraft} className="space-y-4">
                       <div>
                         <label className="block text-xs font-mono font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
-                          Minecraft Username (IGN)
+                          Minecraft Username
                         </label>
                         <div className="relative">
                           <Gamepad2 className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400" />
                           <input
                             type="text"
                             required
-                            placeholder="e.g. SteveBuilder99"
+                            placeholder="e.g. Steve"
                             value={mcIgnInput}
                             onChange={(e) => setMcIgnInput(e.target.value)}
                             maxLength={16}
@@ -838,20 +857,20 @@ export default function CockpitPage() {
 
                       <div>
                         <label className="block text-xs font-mono font-bold uppercase tracking-wider text-emerald-300 mb-1.5">
-                          Create Server Login Password <span className="text-emerald-500 font-normal lowercase">(for in-game /login)</span>
+                          Server Password <span className="text-emerald-500 font-normal lowercase">(used for /login in-game)</span>
                         </label>
                         <div className="relative">
                           <Lock className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400" />
                           <input
                             type="password"
-                            placeholder="Create an in-game password (optional)"
+                            placeholder="Choose a password"
                             value={mcPasswordInput}
                             onChange={(e) => setMcPasswordInput(e.target.value)}
                             className="w-full bg-[#042113] border-2 border-[#166B42] focus:border-[#CCFF00] focus:outline-none rounded-xl py-3 pl-11 pr-4 text-sm font-mono text-white placeholder-emerald-700 transition-colors"
                           />
                         </div>
                         <p className="text-[10px] text-emerald-400 font-mono mt-1">
-                          You will use this password when you type <code className="text-[#CCFF00]">/login &lt;password&gt;</code> on the server.
+                          You will use this password when you type <code className="text-[#CCFF00]">/login &lt;password&gt;</code> in Minecraft.
                         </p>
                       </div>
 
@@ -863,7 +882,7 @@ export default function CockpitPage() {
                         {mcActionLoading ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin text-[#042113]" />
-                            <span>Connecting Account...</span>
+                            <span>Connecting...</span>
                           </>
                         ) : (
                           <>
@@ -876,42 +895,75 @@ export default function CockpitPage() {
                   </div>
                 </div>
 
-                {/* Live Preview Card */}
+                {/* 3D Interactive Skin Model with Mouse Tracking */}
                 <div className="lg:col-span-1">
-                  <div className="bg-[#09341E] border-2 border-[#166B42] rounded-3xl p-6 shadow-[6px_6px_0px_#03170D] space-y-4 text-center">
-                    <h3 className="text-sm font-mono font-bold text-[#CCFF00] uppercase tracking-wider">
-                      Live Skin Preview
-                    </h3>
-
-                    <div className="w-24 h-24 rounded-2xl bg-[#042113] border-2 border-[#CCFF00] flex items-center justify-center mx-auto shadow-[3px_3px_0px_#000] overflow-hidden">
-                      {mcIgnInput && mcIgnInput.trim().length >= 3 ? (
-                        <img
-                          src={`https://mc-heads.net/avatar/${encodeURIComponent(mcIgnInput.trim())}/96`}
-                          alt={mcIgnInput}
-                          className="w-20 h-20 object-contain pixelated"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = "none";
-                          }}
-                        />
-                      ) : (
-                        <Gamepad2 className="w-10 h-10 text-[#CCFF00]/40" />
-                      )}
+                  <div
+                    onMouseMove={handleSkinMouseMove}
+                    onMouseLeave={handleSkinMouseLeave}
+                    className="bg-[#09341E] border-2 border-[#166B42] rounded-3xl p-6 shadow-[6px_6px_0px_#03170D] flex flex-col items-center justify-between text-center select-none cursor-crosshair min-h-[300px]"
+                    style={{ perspective: 800 }}
+                  >
+                    {/* 3D Interactive Model */}
+                    <div
+                      className="relative transition-transform duration-75 ease-out flex items-center justify-center my-2"
+                      style={{
+                        transform: `rotateX(${skinRotate.x}deg) rotateY(${skinRotate.y}deg)`,
+                        transformStyle: "preserve-3d",
+                      }}
+                    >
+                      <img
+                        src={`https://mc-heads.net/body/${encodeURIComponent(
+                          mcIgnInput && mcIgnInput.trim().length >= 3
+                            ? mcIgnInput.trim()
+                            : selectedPresetSkin
+                        )}/170`}
+                        alt={mcIgnInput || selectedPresetSkin}
+                        className="h-44 object-contain pixelated drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)] pointer-events-none"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = `https://mc-heads.net/body/Steve/170`;
+                        }}
+                      />
                     </div>
 
-                    <div className="font-mono text-xs">
-                      <span className="text-white font-black block text-sm">
-                        {mcIgnInput || "Your IGN Here"}
+                    <div
+                      className="w-20 h-3 bg-black/40 rounded-full blur-[3px] transition-transform duration-75 mb-3"
+                      style={{
+                        transform: `translateX(${skinRotate.y * -0.5}px) scale(${1 + Math.abs(skinRotate.x) * 0.01})`,
+                      }}
+                    />
+
+                    <div className="font-mono text-xs mb-3">
+                      <span className="text-white font-bold block text-sm">
+                        {mcIgnInput || selectedPresetSkin}
                       </span>
                       <span className="text-emerald-400 text-[10px]">
-                        {mcIgnInput ? "Ready to sync with AuthMe" : "Enter username to preview"}
+                        {mcIgnInput ? "Ready to connect" : "Move cursor to rotate"}
                       </span>
                     </div>
 
-                    <div className="bg-[#042113] p-3 rounded-xl border border-[#166B42] text-[11px] font-mono text-emerald-300 text-left space-y-1.5">
-                      <div className="text-[#00F0FF] font-bold uppercase text-[10px]">✨ Features:</div>
-                      <div>• Automated AuthMe sync</div>
-                      <div>• Web password reset</div>
-                      <div>• In-game rank badges</div>
+                    {/* Skin Preset Picker */}
+                    <div className="w-full pt-2 border-t border-[#166B42]/80">
+                      <div className="flex flex-wrap items-center justify-center gap-1.5">
+                        {skinPresets.map((preset) => (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedPresetSkin(preset.id);
+                              if (!mcIgnInput) {
+                                setMcIgnInput(preset.id);
+                              }
+                            }}
+                            className={`text-[10px] font-mono px-2 py-1 rounded-lg border transition-all cursor-pointer ${
+                              (mcIgnInput || selectedPresetSkin) === preset.id
+                                ? "bg-[#CCFF00] text-[#042113] font-bold border-[#CCFF00]"
+                                : "bg-[#042113] text-emerald-300 border-[#166B42] hover:text-white"
+                            }`}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
