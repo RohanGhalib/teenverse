@@ -444,3 +444,195 @@ export async function sendStatusUpdateEmail(params: StatusUpdateEmailParams) {
     return { success: false, error };
   }
 }
+
+export interface CustomBroadcastEmailParams {
+  toEmail: string | string[];
+  subject: string;
+  headline: string;
+  badgeText?: string;
+  htmlBody: string;
+  ctaButton?: {
+    text: string;
+    url: string;
+  };
+}
+
+/**
+ * Generate full Teenverse-themed HTML email template
+ */
+export function generateTeenverseCustomEmailHtml(params: {
+  headline: string;
+  badgeText?: string;
+  htmlBody: string;
+  ctaButton?: {
+    text: string;
+    url: string;
+  };
+}): string {
+  const { headline, badgeText = "OFFICIAL ANNOUNCEMENT", htmlBody, ctaButton } = params;
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${headline || "Teenverse Pakistan"}</title>
+        <style>
+          body { margin: 0; padding: 24px 12px; background-color: #041D10; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+          .tv-content p { margin: 0 0 16px 0; line-height: 1.7; color: #E6FFFA; font-size: 14px; }
+          .tv-content strong, .tv-content b { color: #CCFF00; font-weight: 800; }
+          .tv-content em, .tv-content i { color: #A7F3D0; font-style: italic; }
+          .tv-content hr { border: 0; height: 1px; background: #166B42; margin: 24px 0; }
+          .tv-content img { max-width: 100%; height: auto; border-radius: 12px; margin: 14px 0; border: 2px solid #166B42; display: block; }
+          .tv-content a { color: #00F0FF; text-decoration: underline; }
+          .tv-content h1, .tv-content h2, .tv-content h3 { color: #FFFFFF; font-weight: 800; margin: 20px 0 10px 0; }
+          .tv-content ul, .tv-content ol { margin: 0 0 16px 20px; padding: 0; color: #E6FFFA; font-size: 14px; }
+          .tv-content li { margin-bottom: 6px; }
+        </style>
+      </head>
+      <body style="margin: 0; padding: 24px 12px; background-color: #041D10; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #082D19; border: 3px solid #CCFF00; border-radius: 16px; box-shadow: 0 12px 35px rgba(0,0,0,0.6); overflow: hidden;">
+                <!-- Header -->
+                <tr>
+                  <td align="center" style="background-color: #042113; padding: 26px 20px; border-bottom: 2px solid #166B42;">
+                    <img src="${LOGO_URL}" alt="Teenverse Logo" width="140" style="display: block; margin: 0 auto 12px auto; max-width: 140px; height: auto;" />
+                    <div style="display: inline-block; background-color: #CCFF00; color: #042113; font-size: 11px; font-weight: 900; font-family: monospace; padding: 4px 12px; border-radius: 14px; text-transform: uppercase; letter-spacing: 1px;">
+                      ${badgeText}
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Body -->
+                <tr>
+                  <td style="padding: 30px 24px;">
+                    ${
+                      headline
+                        ? `<h1 style="margin: 0 0 18px 0; color: #FFFFFF; font-size: 24px; font-weight: 900; line-height: 1.3;">
+                            ${headline}
+                          </h1>`
+                        : ""
+                    }
+                    
+                    <!-- Content Area -->
+                    <div class="tv-content" style="color: #E6FFFA; font-size: 14px; line-height: 1.7;">
+                      ${htmlBody}
+                    </div>
+
+                    ${
+                      ctaButton && ctaButton.text && ctaButton.url
+                        ? `
+                        <!-- CTA Action Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 28px 0 18px 0;">
+                          <tr>
+                            <td align="center">
+                              <a href="${ctaButton.url}" target="_blank" style="display: inline-block; background-color: #CCFF00; color: #042113; text-decoration: none; font-size: 13px; font-weight: 900; padding: 12px 28px; border-radius: 12px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(204,255,0,0.3);">
+                                ${ctaButton.text} &rarr;
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      `
+                        : ""
+                    }
+
+                    ${getEmailSocialFooter()}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
+/**
+ * Send a custom broadcast email to a single recipient or small list
+ */
+export async function sendCustomBroadcastEmail(params: CustomBroadcastEmailParams) {
+  const { toEmail, subject, headline, badgeText, htmlBody, ctaButton } = params;
+  const htmlContent = generateTeenverseCustomEmailHtml({
+    headline,
+    badgeText,
+    htmlBody,
+    ctaButton,
+  });
+
+  try {
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: Array.isArray(toEmail) ? toEmail : [toEmail],
+      subject,
+      html: htmlContent,
+    });
+    return { success: true, data };
+  } catch (error: any) {
+    console.error("Failed to send custom broadcast email via Resend:", error);
+    return { success: false, error: error?.message || String(error) };
+  }
+}
+
+/**
+ * Dispatch broadcast email to multiple recipients individually (in concurrency chunks)
+ * Ensures privacy so recipients cannot see other addresses.
+ */
+export async function sendBatchBroadcastEmails(
+  recipients: string[],
+  params: Omit<CustomBroadcastEmailParams, "toEmail">
+) {
+  const htmlContent = generateTeenverseCustomEmailHtml({
+    headline: params.headline,
+    badgeText: params.badgeText,
+    htmlBody: params.htmlBody,
+    ctaButton: params.ctaButton,
+  });
+
+  const uniqueRecipients = Array.from(
+    new Set(recipients.map((r) => r.trim().toLowerCase()).filter(Boolean))
+  );
+
+  let sentCount = 0;
+  let failedCount = 0;
+  const errors: string[] = [];
+
+  // Send in chunks of 5 concurrently to respect rate limits
+  const chunkSize = 5;
+  for (let i = 0; i < uniqueRecipients.length; i += chunkSize) {
+    const chunk = uniqueRecipients.slice(i, i + chunkSize);
+    await Promise.all(
+      chunk.map(async (email) => {
+        try {
+          const res = await resend.emails.send({
+            from: FROM_EMAIL,
+            to: [email],
+            subject: params.subject,
+            html: htmlContent,
+          });
+          if (res.error) {
+            failedCount++;
+            errors.push(`${email}: ${res.error.message}`);
+          } else {
+            sentCount++;
+          }
+        } catch (err: any) {
+          failedCount++;
+          errors.push(`${email}: ${err?.message || "Unknown error"}`);
+        }
+      })
+    );
+  }
+
+  return {
+    success: failedCount === 0,
+    total: uniqueRecipients.length,
+    sentCount,
+    failedCount,
+    errors,
+  };
+}
+

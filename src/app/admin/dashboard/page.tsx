@@ -384,6 +384,15 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin/email-sender"
+              className="bg-[#CCFF00] hover:bg-[#b8e600] text-[#042113] text-xs font-mono font-black px-3 py-2 rounded-xl border border-[#042113] flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_#000]"
+              title="Compose & Send Broadcast Emails"
+            >
+              <Mail className="w-3.5 h-3.5 text-[#042113]" />
+              <span>Email Sender</span>
+            </Link>
+
             <button
               onClick={fetchApplications}
               disabled={loadingData}
